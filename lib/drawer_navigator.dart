@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frequency_list/datebase_helper.dart';
 import 'package:flutter_frequency_list/frequency_list_screen.dart';
+import 'package:flutter_frequency_list/main.dart';
 import 'package:flutter_frequency_list/task_list_screen.dart';
+import 'task_by_frequency.dart';
 
 class DrawerNavigation extends StatefulWidget {
   const DrawerNavigation({super.key});
@@ -10,6 +13,38 @@ class DrawerNavigation extends StatefulWidget {
 }
 
 class _DrawerNavigationState extends State<DrawerNavigation> {
+  List<Widget> _frequencyList = <Widget>[];
+
+  @override
+  void initState() {
+    super.initState();
+    getAllFrequency();
+  }
+
+  getAllFrequency() async {
+    var frequencies =
+    await dbHelper.queryAllRows(DatabaseHelper.frequencyTable);
+
+    frequencies.forEach((frequency) {
+      setState(() {
+        _frequencyList.add(InkWell(
+          onTap: () {
+            print('---------> Selected Category:');
+            print(frequency['_id']);
+            print(frequency['frequency']);
+
+            Navigator.of(context).push(new MaterialPageRoute(
+                builder: (context) =>
+                    TaskByFrequency(frequency: frequency['frequency'])));
+          },
+          child: ListTile(
+            title: Text(frequency['frequency']),
+          ),
+        ));
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -43,6 +78,10 @@ class _DrawerNavigationState extends State<DrawerNavigation> {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => FrequencyListScreen()));
               },
+            ),
+            Divider(),
+            Column(
+              children: _frequencyList,
             )
           ],
         ),
