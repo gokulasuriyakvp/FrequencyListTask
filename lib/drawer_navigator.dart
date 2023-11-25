@@ -22,6 +22,7 @@ class _DrawerNavigationState extends State<DrawerNavigation> {
   }
 
   getAllFrequency() async {
+
     var frequencies =
     await dbHelper.queryAllRows(DatabaseHelper.frequencyTable);
 
